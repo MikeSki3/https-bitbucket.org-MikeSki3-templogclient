@@ -1,7 +1,7 @@
 'use strict';
 
 // Declare app level module which depends on views, and components
-angular.module('tempLog', []).
+angular.module('tempLog', ["highcharts-ng"]).
 
 	config(['$httpProvider', function($httpProvider){
 		$httpProvider.defaults.useXDomain = true;
@@ -9,17 +9,36 @@ angular.module('tempLog', []).
 	}]).
 	
 
-	controller('tempLogController', ["$http", function($http){
+	controller('tempLogController', ["$http", "$scope", function($http, $scope){
 		this.thing = "Magical turds";
+		var context = this;
 		$http({
 			method: 'GET',
 			url: 'http://127.0.0.1:8081/templog/json'
 		}).then(function successCallback(response) {
 			console.log('we did it!');
 			console.log(response);
+			context.responseData = response.data;
 		}, function errorCallback(response) {
 			console.log('we fucked up!');
 		});
+		
+		 $scope.chartConfig = {
+			        options: {
+			            chart: {
+			                type: 'bar'
+			            }
+			        },
+			        series: [{
+			            data: [10, 15, 12, 8, 7]
+			        }],
+			        title: {
+			            text: 'Hello'
+			        },
+
+			        loading: false
+			    }
+		
 	}]);
 
 
