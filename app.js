@@ -17,27 +17,40 @@ angular.module('tempLog', ["highcharts-ng"]).
 			url: 'http://127.0.0.1:8081/templog/json'
 		}).then(function successCallback(response) {
 			console.log('we did it!');
-			console.log(response);
+//			console.log(response);
 			context.responseData = response.data;
+			var chartData = [];
+			for(var i = 0; i < response.data.length; i++){
+				chartData.push([new Date(response.data[i].fields.entry_date).getTime(), Number(response.data[i].fields.temp.replace(/[^0-9\.]+/g,""))]);
+			}
+			 $scope.chartConfig = {
+				        options: {
+				            chart: {
+				                type: 'line'
+				            }
+				        },
+				        series: [],
+				        title: {
+				            text: 'Temps'
+				        },
+
+				        loading: false,
+				        xAxis: {
+				        	type: 'datetime',
+				        	dateTimeLabelFormats: {
+				        		day: '%b %e'
+				        	},
+				        	minTickInterval: 24 * 3600 * 1000
+				        }
+				    }
+			 $scope.chartConfig.series.push({
+				 id: 1,
+				 data: chartData,
+				 pointInterval: 24 * 3600 * 1000
+			 })
 		}, function errorCallback(response) {
 			console.log('we fucked up!');
 		});
-		
-		 $scope.chartConfig = {
-			        options: {
-			            chart: {
-			                type: 'bar'
-			            }
-			        },
-			        series: [{
-			            data: [10, 15, 12, 8, 7]
-			        }],
-			        title: {
-			            text: 'Hello'
-			        },
-
-			        loading: false
-			    }
 		
 	}]);
 
