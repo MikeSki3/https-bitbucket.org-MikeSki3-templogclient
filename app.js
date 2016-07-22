@@ -14,7 +14,7 @@ angular.module('tempLog', ["highcharts-ng"]).
 		var context = this;
 		$http({
 			method: 'GET',
-			url: 'http://127.0.0.1:8081/templog/json'
+			url: 'http://174.61.239.28:8000/templog/json'
 		}).then(function successCallback(response) {
 			console.log('we did it!');
 //			console.log(response);
