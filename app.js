@@ -3,25 +3,44 @@
 // Declare app level module which depends on views, and components
 angular.module('tempLog', ["highcharts-ng"]).
 
-	config(['$httpProvider', function($httpProvider){
-		$httpProvider.defaults.useXDomain = true;
-        delete $httpProvider.defaults.headers.common['X-Requested-With'];
-	}]).
+//	config(['$httpProvider', function($httpProvider){
+//		$httpProvider.defaults.useXDomain = true;
+//        delete $httpProvider.defaults.headers.common['X-Requested-With'];
+//	}]).
 	
 
 	controller('tempLogController', ["$http", "$scope", function($http, $scope){
-		this.thing = "Magical turds";
+//		this.thing = "Magical turds";
 		var context = this;
+		var chartDataAll = new Array(),
+			chartData30 = new Array(),
+			chartData60 = new Array();
+	    $("#menu-toggle").click(function(e) {
+	        e.preventDefault();
+	        $("#wrapper").toggleClass("toggled");
+	        if($(".fa.fa-arrow-left").hasClass("fa-refresh")){
+	        	$(".fa.fa-arrow-left").removeClass("fa-refresh")
+	        } else {
+	        	$(".fa.fa-arrow-left").addClass("fa-refresh")
+	        }
+	    });
 		$http({
 			method: 'GET',
-			url: 'http://127.0.0.1:8081/templog/json'
+			url: 'http://192.168.1.189:8000/templog/json'
 		}).then(function successCallback(response) {
 			console.log('we did it!');
 //			console.log(response);
 			context.responseData = response.data;
-			var chartData = [];
+//			context.chartData = new Array();
 			for(var i = 0; i < response.data.length; i++){
-				chartData.push([new Date(response.data[i].fields.entry_date).getTime(), Number(response.data[i].fields.temp.replace(/[^0-9\.]+/g,""))]);
+				var date = new Date(response.data[i].fields.entry_date);
+				chartDataAll.push([date.getTime(), Number(response.data[i].fields.temp.replace(/[^0-9\.]+/g,""))]);
+				if(date.getMinutes() == 30 || date.getMinutes() == 31 || date.getMinutes() == 0){
+					chartData30.push([date.getTime(), Number(response.data[i].fields.temp.replace(/[^0-9\.]+/g,""))]);
+				}
+				if (date.getMinutes() == 0){
+					chartData60.push([date.getTime(), Number(response.data[i].fields.temp.replace(/[^0-9\.]+/g,""))]);
+				}
 			}
 			 $scope.chartConfig = {
 				        options: {
@@ -41,13 +60,33 @@ angular.module('tempLog', ["highcharts-ng"]).
 				        		day: '%b %e'
 				        	},
 				        	minTickInterval: 24 * 3600 * 1000
+				        },
+				        legend: {
+				        	enabled: false
 				        }
 				    }
 			 $scope.chartConfig.series.push({
 				 id: 1,
-				 data: chartData,
-				 pointInterval: 24 * 3600 * 1000
+				 data: chartDataAll,
+				 pointInterval: 24 * 3600 * 1000,
+				 showInLegend: false
 			 })
+			 $scope.chartConfig.series.push({
+				 id: 2,
+				 data: chartData30,
+				 pointInterval: 24 * 3600 * 1000,
+				 showInLegend: false
+			 })
+			 $scope.chartConfig.series.push({
+				 id: 3,
+				 data: chartData60,
+				 pointInterval: 24 * 3600 * 1000,
+				 showInLegend: false
+			 })
+			$("#15").click(function(){
+				if($scope.chartConfig.series[0].visible)
+					$scope.chartConfig.series[1].hide();
+			});
 		}, function errorCallback(response) {
 			console.log('we fucked up!');
 		});
