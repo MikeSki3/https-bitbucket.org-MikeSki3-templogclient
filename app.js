@@ -69,7 +69,8 @@ angular.module('tempLog', ["highcharts-ng"]).
 				 id: 1,
 				 data: chartDataAll,
 				 pointInterval: 24 * 3600 * 1000,
-				 showInLegend: false
+				 showInLegend: false,
+				 visible: true
 			 })
 			 $scope.chartConfig.series.push({
 				 id: 2,
@@ -83,14 +84,30 @@ angular.module('tempLog', ["highcharts-ng"]).
 				 pointInterval: 24 * 3600 * 1000,
 				 showInLegend: false
 			 })
-			$("#15").click(function(){
-				if($scope.chartConfig.series[0].visible)
-					$scope.chartConfig.series[1].hide();
-			});
 		}, function errorCallback(response) {
 			console.log('we fucked up!');
 		});
-		
+		$("#15").click(function(){
+			if($scope.chartConfig.getHighcharts().series[0].visible)
+				$scope.chartConfig.getHighcharts().series[0].hide();
+			else
+				$scope.chartConfig.getHighcharts().series[0].show();
+			
+		});
+		$("#30").click(function(){
+			if($scope.chartConfig.getHighcharts().series[1].visible)
+				$scope.chartConfig.getHighcharts().series[1].hide();
+			else
+				$scope.chartConfig.getHighcharts().series[1].show();
+			
+		});
+		$("#60").click(function(){
+			if($scope.chartConfig.getHighcharts().series[2].visible)
+				$scope.chartConfig.getHighcharts().series[2].hide();
+			else
+				$scope.chartConfig.getHighcharts().series[2].show();
+			
+		});
 	}]);
 
 
